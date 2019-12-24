@@ -31,39 +31,51 @@ import javax.swing.table.DefaultTableModel;
 
 import com.mysql.jdbc.Statement;
 
-
-
 public class Home extends JFrame implements ActionListener{
 	JPanel mainPanel;
 	JPanel clientPanel;
 	JPanel adminPanel;
 	JPanel nutritionistPanel;
+	JPanel allNutriPanel;
+	JPanel addNewNutriPanel;
+	JPanel removeNutriPanel;
+	JPanel allClientPanel;
+	JPanel addNewClientPanel;
+	JPanel removeClientPanel;
 	
+	JLabel idLabel;
+	JLabel fullNameLabel;
 	JLabel userNameLabel;
 	JLabel passwordLabel;
+	JLabel emailIdLabel;
 	JLabel displayNutriLabel;
 	JLabel userTypeLabel;
 	
+	JTextField idTextField;
+	JTextField fullNameTextField;
 	JTextField userName;
 	JTextField password;
+	JTextField emailIdTextField;
+
 	JTextField nutriSearch;
 	JButton loginButton;
 	JButton nutriSearchButton;
 	JButton clientSearchButton;
+	JButton logoutButton;
+	JButton homeButton;
+
 	JButton showAllNutri;
 	JButton showAllClients;
 	JButton addNutri;
 	JButton addClient;
 	JButton removeNutri;
 	JButton removeClient;
-	
-	
+
 	JComboBox userTypeCombo;
 	
 	JTable table;
 	String[] columnNames = {"Name", "Contact Email"};
 	String[] userTypes = {"Client","Nutritionist","Admin"};
-	
 	int X=30;
 	int Y=30;
 	int WIDTH=100;
@@ -73,21 +85,77 @@ public class Home extends JFrame implements ActionListener{
 		obj.myFrame();
 	}
 	public void myFrame(){
+		
 		initialize();
 		createMainPanel();
-		createClientPanel();
-		createAdminPanel();
-		createNutriPanel();
+		
 		setVisible(true);
 		setTitle("NutriSpec Application");
 	}	
+	private void createAddNewNutriPanel() {
+		addNewNutriPanel=initializePanel(addNewNutriPanel);
+		showAllLabels();
+		showAllTextFields();
+		showSubmitButton();
+		addNewNutriPanel.setVisible(false);
+		add(addNewNutriPanel);
+	}
+	private void showSubmitButton() {
+		addNutri.setText("Add Nutritionist");
+		addNutri.setBounds(X*3, Y*8, WIDTH*2, HEIGHT);
+		addNutri.addActionListener(this);
+		addNewNutriPanel.add(addNutri);		
+	}
+	private void showAllTextFields() {
+		idTextField= new JTextField();
+		idTextField.setBounds(X*4, Y*2, WIDTH*2, HEIGHT);
+		addNewNutriPanel.add(idTextField);		
+		fullNameTextField= new JTextField();
+		fullNameTextField.setBounds(X*4, Y*3, WIDTH*2, HEIGHT);
+		addNewNutriPanel.add(fullNameTextField);		
+		userName.setBounds(X*4, Y*4, WIDTH*2, HEIGHT);
+		addNewNutriPanel.add(userName);		
+		password.setBounds(X*4, Y*5, WIDTH*2, HEIGHT);
+		addNewNutriPanel.add(password);		
+		emailIdTextField = new JTextField();
+		emailIdTextField.setBounds(X*4, Y*6, WIDTH*2, HEIGHT);
+		addNewNutriPanel.add(emailIdTextField);		
+	}
+	private void showAllLabels() {
+		idLabel= new JLabel("ID*");
+		idLabel.setBounds(X, Y*2, WIDTH, HEIGHT);
+		addNewNutriPanel.add(idLabel);
+		fullNameLabel= new JLabel("Full Name*");
+		fullNameLabel.setBounds(X, Y*3, WIDTH, HEIGHT);
+		addNewNutriPanel.add(fullNameLabel);		
+		userNameLabel.setBounds(X, Y*4, WIDTH, HEIGHT);
+		addNewNutriPanel.add(userNameLabel);
+		passwordLabel.setBounds(X, Y*5, WIDTH, HEIGHT);
+		addNewNutriPanel.add(passwordLabel);
+		emailIdLabel= new JLabel("Email ID*");
+		emailIdLabel.setBounds(X, Y*6, WIDTH, HEIGHT);
+		addNewNutriPanel.add(emailIdLabel);
+	}
+	private void createAllNutriPanel() {
+		allNutriPanel=initializePanel(allNutriPanel);
+		showHomeButton();
+		displayAllNutritionist('N');
+		allNutriPanel.setVisible(false);
+		add(allNutriPanel);
+	}
+	private void showHomeButton() {
+		homeButton = new JButton("Home");
+		homeButton.setBounds(X-20, Y-20, WIDTH-20, HEIGHT);
+		homeButton.addActionListener(this);
+		allNutriPanel.add(homeButton);		
+	}
 	private void initialize() {
 		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setLayout(null);		
 	}
 	private void createMainPanel() {
-		initializeMainPanel();
+		mainPanel=initializePanel(mainPanel);
 		showLabels();
 		showTextFields();
 		selectUserType();
@@ -95,10 +163,11 @@ public class Home extends JFrame implements ActionListener{
 		mainPanel.setVisible(true); 
 		add(mainPanel);
 	}
-	private void initializeMainPanel() {
-		mainPanel = new JPanel(); 		
-		mainPanel.setBounds(0, 0, 400, 400);
-		mainPanel.setLayout(null);		
+	private JPanel initializePanel(JPanel panel) {
+		panel = new JPanel(); 		
+		panel.setBounds(0, 0, 400, 400);
+		panel.setLayout(null);	
+		return panel;
 	}
 	private void showLabels() {
 		userNameLabel= new JLabel("User Name*");
@@ -133,23 +202,18 @@ public class Home extends JFrame implements ActionListener{
 		loginButton = new JButton("Login");
 		loginButton.setBounds(X+100,Y*4,WIDTH, HEIGHT);
 		loginButton.addActionListener(this);
-		mainPanel.add(loginButton);		
+		mainPanel.add(loginButton);	
 	}
 	
 	private void createClientPanel() {
-		initializeClientPanel();
-		//showUserName('C');
+		clientPanel=initializePanel(clientPanel);
 		showSearchTextField('C');
 		showSearchButton('C');
-		displayAllNutritionist();
+		showLogoutButton('C');
+		displayAllNutritionist('C');
 		
 		clientPanel.setVisible(false);
 		this.add(clientPanel);
-	}
-	private void initializeClientPanel() {
-		clientPanel =new JPanel();
-		clientPanel.setBounds(0, 0, 400, 400);
-		clientPanel.setLayout(null);		
 	}
 	private void showSearchTextField(char z) {
 		nutriSearch= new JTextField();
@@ -179,13 +243,31 @@ public class Home extends JFrame implements ActionListener{
 			nutritionistPanel.add(clientSearchButton);
 		}
 	}
-	private void displayAllNutritionist() {
+	private void showLogoutButton(char z) {
+		logoutButton = new JButton("Logout");
+		logoutButton.setBounds(X*10, Y-20, WIDTH-20, HEIGHT);
+		logoutButton.addActionListener(this);
+		
+		if(z=='C')
+		{ 		
+			clientPanel.add(logoutButton); 
+		}		 
+		if(z=='N')
+		{			
+			nutritionistPanel.add(logoutButton);
+		}
+		if(z=='A')
+		{
+			adminPanel.add(logoutButton);
+		}
+	}
+	private void displayAllNutritionist(char z) {
 		DefaultTableModel model = new DefaultTableModel();
 		model.setColumnIdentifiers(columnNames);
 		table = getNewTable(model);
 		JScrollPane scroll = getNewJScrollPane();		
-		Connection con = DB.getConnection();		
-		getAllNutritionist(con,model,scroll);		
+		Connection con = DB.getConnection();	
+		getAllNutritionist(con,model,scroll,z);		
 	}
 	private JTable getNewTable(DefaultTableModel model) {
 		table=new JTable(model);
@@ -195,13 +277,14 @@ public class Home extends JFrame implements ActionListener{
 		return table;
 	}
 	private JScrollPane getNewJScrollPane() {
+		
 		JScrollPane scroll=new JScrollPane(table);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		return scroll;
 	}
-	private void getAllNutritionist(Connection con, DefaultTableModel model, JScrollPane scroll) {
+	private void getAllNutritionist(Connection con, DefaultTableModel model, JScrollPane scroll, char z) {
 		try
 		{
 			PreparedStatement ps = con.prepareStatement("Select * from nutri");
@@ -209,41 +292,38 @@ public class Home extends JFrame implements ActionListener{
 			while(rs.next()){
 				String name=rs.getString(2);
 				String email=rs.getString(5);				
-		 
 				model.addRow(new Object[] {name,email});
 				displayNutriLabel = new JLabel("Displaying list of all Nutritioninst");
 				displayNutriLabel.setBounds(X, Y*3, WIDTH*2, HEIGHT);
-				clientPanel.add(displayNutriLabel);
 				scroll.setBounds( X, Y*4, WIDTH*3+20, HEIGHT*3 );
-				clientPanel.add(scroll);
+				if(z=='C')
+				{
+					clientPanel.add(displayNutriLabel);
+					clientPanel.add(scroll);
+				}
+				else if(z=='N')
+				{
+					allNutriPanel.add(displayNutriLabel);
+					allNutriPanel.add(scroll);				   
+				}					
 			}
 			con.close();
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}		
 	}
-	
 	private void createAdminPanel() {
-		initializeAdminPanel();
-		
+		adminPanel=initializePanel(adminPanel);
 		showAllNutritionistButton();
 		showAddNewNutritionistButton();
 		showRemoveNutritionistButton();
-		
 		showAllClientsButton();		
 		showAddNewClientButton();
 		showRemoveClientButton();
-			
+		showLogoutButton('A');
 		adminPanel.setVisible(false);
 		this.add(adminPanel);
-		
-	}
-	private void initializeAdminPanel() {
-		adminPanel =new JPanel();
-		adminPanel.setBounds(0, 0, 400, 400);
-		adminPanel.setLayout(null);				
 	}
 	private void showAllNutritionistButton() {
 		showAllNutri = new JButton("Show All Nutritionists");
@@ -263,7 +343,6 @@ public class Home extends JFrame implements ActionListener{
 		removeNutri.addActionListener(this);
 		adminPanel.add(removeNutri);		
 	}
-	
 	private void showAllClientsButton() {
 		showAllClients = new JButton("Show All Clients");
 		showAllClients.setBounds(X, Y*4, WIDTH*2, HEIGHT);
@@ -282,72 +361,86 @@ public class Home extends JFrame implements ActionListener{
 		removeClient.addActionListener(this);
 		adminPanel.add(removeClient);
 	}
-	
 	private void createNutriPanel() {
-		initializeNutriPanel();
+		nutritionistPanel=initializePanel(nutritionistPanel);
 		showSearchTextField('N');
 		showSearchButton('N');
-		
+		showLogoutButton('N');
 		nutritionistPanel.setVisible(false);
 		this.add(nutritionistPanel);
 	}
-	private void initializeNutriPanel() {
-		nutritionistPanel =new JPanel();
-		nutritionistPanel.setBounds(0, 0, 400, 400);
-		nutritionistPanel.setLayout(null);		
-		
-	}
-	
 	public void actionPerformed(ActionEvent arg0) {
-		if(arg0.getSource() == loginButton){
+		if(arg0.getSource() == loginButton){			
 			if(userTypeCombo.getSelectedItem().equals("Client"))
 			{
-				System.out.println("I am in clientView");
-				showClientView();			 
+				createClientPanel();
+				showClientView();	
 			}
 			if(userTypeCombo.getSelectedItem().equals("Nutritionist"))
 			{
-				System.out.println("I am in Nutritionist View");
+				createNutriPanel();
 				showNutritionistView();
 			}
 			if(userTypeCombo.getSelectedItem().equals("Admin"))
 			{
-				System.out.println("I am in Admin View");
+				createAllNutriPanel();
+				createAdminPanel();
 				showAdminView();
 			}
 		}
-		/*
-		 * else { mainPanel.setVisible(true); clientPanel.setVisible(false); }
-		 */
+		if(((JButton)arg0.getSource()).getText().equals("Logout"))
+		{
+			if(clientPanel!=null)
+			{
+				clientPanel.setVisible(false);
+			}
+			if(adminPanel!=null)
+			{
+				adminPanel.setVisible(false);
+			}
+			if(allNutriPanel!=null)
+			{
+				allNutriPanel.setVisible(false);
+			}
+			userNameLabel.setText("User Name*");
+			userNameLabel.setBounds(X+5, Y, WIDTH, HEIGHT);
+			mainPanel.add(userNameLabel);
+			mainPanel.setVisible(true);
+		}
+		if(((JButton)arg0.getSource()).getText().equals("Show All Nutritionists"))
+		{
+			adminPanel.setVisible(false);
+			allNutriPanel.add(logoutButton);
+			allNutriPanel.setVisible(true);
+		}
+		if(((JButton)arg0.getSource()).getText().equals("Add New Nutritionist"))
+		{
+			createAddNewNutriPanel();
+			adminPanel.setVisible(false);
+			addNewNutriPanel.setVisible(true);
+		}
+		if(((JButton)arg0.getSource()).getText().equals("Home"))
+		{
+				allNutriPanel.setVisible(false);
+				adminPanel.setVisible(true);
+		}
 	}
-	
 	private void showClientView() {
 		Connection con = DB.getConnection();
 		if(!userExists(con,'C'))
 		{
 			JOptionPane.showMessageDialog(this, "Enter correct username\n" , " ",JOptionPane.INFORMATION_MESSAGE); 
 		}
-		/*
-		 * try { PreparedStatement ps = con.prepareStatement("Select * from cli");
-		 * ResultSet rs = ps.executeQuery(); while(rs.next()) {
-		 * if(rs.getString(3).equals(userName.getText())) { mainPanel.setVisible(false);
-		 * adminPanel.setVisible(false); nutritionistPanel.setVisible(false);
-		 * giveAccessToClientPanel(rs.getString(2)); } else {
-		 * JOptionPane.showMessageDialog(this, "Enter correct username\n" ,
-		 * " ",JOptionPane.INFORMATION_MESSAGE); } } con.close(); } catch (SQLException
-		 * e) { e.printStackTrace(); }
-		 */	
 	}
 	private void giveAccessToClientPanel(String name) {
 		welcomeClient(name);		
 		clientPanel.setVisible(true);		
 	}
 	private void welcomeClient(String name) {
-		userNameLabel.setBounds(X, Y-20, WIDTH*2, HEIGHT);
+		userNameLabel.setBounds(X*5, Y-20, WIDTH*2, HEIGHT);
 		userNameLabel.setText("Welcome "+name);
 		clientPanel.add(userNameLabel);		
 	}
-	
 	private void showNutritionistView() {
 		Connection con = DB.getConnection();
 			 if(!userExists(con,'N'))
@@ -394,7 +487,7 @@ public class Home extends JFrame implements ActionListener{
 		nutritionistPanel.setVisible(true);	
 	}
 	private void welcomeNutritionist(String name) {
-		userNameLabel.setBounds(X, Y-20, WIDTH*2, HEIGHT);
+		userNameLabel.setBounds(X*5, Y-20, WIDTH*2, HEIGHT);
 		userNameLabel.setText("Welcome "+name);
 		nutritionistPanel.add(userNameLabel);	
 		displayMyClientsOnly();		
@@ -434,7 +527,6 @@ public class Home extends JFrame implements ActionListener{
 			while(rs1.next()){
 				String name1=rs1.getString(2);
 				String email=rs1.getString(5);				
-				//System.out.println("name1:"+name1);
 				model.addRow(new Object[] {name1,email});
 				displayNutriLabel = new JLabel("Displaying list of all Clients enrolled with you");
 				displayNutriLabel.setBounds(X, Y*3, WIDTH*4, HEIGHT);
@@ -449,29 +541,8 @@ public class Home extends JFrame implements ActionListener{
 		}		
 	}
 	private void showAdminView() {
-		/*
-		 * Connection con = DB.getConnection();
-		 * 
-		 * if(!userExists(con)) { JOptionPane.showMessageDialog(this,
-		 * "Enter correct username\n" , " ",JOptionPane.INFORMATION_MESSAGE); }
-		 */
 		mainPanel.setVisible(false);
 		//welcomeAdmin(name);		
 		adminPanel.setVisible(true);	
-		
 	}	
-	
-	/*
-	 * private void showUserName(char z) {
-	 * System.out.println("I am not coming here?"); if(!mainPanel.isVisible() &&
-	 * z=='C') { System.out.println("Hello Am I coming here?");
-	 * userNameLabel.setText("Welcome "+userName); clientPanel.add(userNameLabel);
-	 * add(clientPanel); System.out.println("Hello"); } if(!mainPanel.isVisible() &&
-	 * z=='N') { System.out.println("Hello Yaar");
-	 * userNameLabel.setText("Welcome1 "+userName);
-	 * nutritionistPanel.add(userNameLabel); System.out.println("Hello Yaar");
-	 * System.out.println("namNutri1:"+userName.getText());
-	 * 
-	 * } }
-	 */
 }
